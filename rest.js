@@ -59,5 +59,7 @@ module.exports = {
         search: search || '',
         sort: sort || ''
     });
+
+    module.exports = router;
 }
 };
