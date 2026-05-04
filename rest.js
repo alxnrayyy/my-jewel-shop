@@ -1,39 +1,9 @@
+const express = require('express');
+const router = express.Router();
 const store = require('./store');
 
-module.exports = {
-    list: (req, res) => res.json(store.getAll()),
-    
-    item: (req, res) => {
-        const item = store.getById(req.params.id);
-        item ? res.json(item) : res.status(404).send('Не найдено');
-    },
-
-    create: (req, res) => {
-        const items = store.getAll();
-        const newItem = { id: Date.now(), ...req.body };
-        items.push(newItem);
-        store.saveAll(items);
-        res.status(201).json(newItem);
-    },
-
-    update: (req, res) => {
-        let items = store.getAll();
-        const index = items.findIndex(i => i.id === parseInt(req.params.id));
-        if (index !== -1) {
-            items[index] = { ...items[index], ...req.body };
-            store.saveAll(items);
-            res.json(items[index]);
-        } else { res.status(404).send('Не найдено'); }
-    },
-
-    remove: (req, res) => {
-        let items = store.getAll();
-        const newItems = items.filter(i => i.id !== parseInt(req.params.id));
-        store.saveAll(newItems);
-        res.status(204).send();
-    },
-
-    renderUI: (req, res) => {
+// Функция для отрисовки страницы товаров
+router.get('/view-items', (req, res) => {
     let items = store.getAll();
     const { search, sort, page = 1 } = req.query;
     const limit = 4; 
@@ -59,7 +29,10 @@ module.exports = {
         search: search || '',
         sort: sort || ''
     });
+});
 
-    module.exports = router;
-}
-};
+// Дополнительные API маршруты (если нужны для тестов)
+router.get('/api/items', (req, res) => res.json(store.getAll()));
+
+// САМАЯ ВАЖНАЯ СТРОКА ДЛЯ ЭКСПОРТА
+module.exports = router;
