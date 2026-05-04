@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ювелирный Чат</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        #chat-window { display: none; }
+        .chat-container { display: flex; gap: 20px; height: 400px; }
+        #messages { flex: 3; border: 1px solid #438686; overflow-y: scroll; padding: 10px; background: white; }
+        #user-list { flex: 1; border: 1px solid #438686; padding: 10px; background: #e0f2f2; }
+        .system-msg { color: gray; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Наш Чат 💎</h1></div>
+    <div class="container">
+        <div id="auth-block">
+            <h3>Представьтесь:</h3>
+            <input type="text" id="username-input" placeholder="Ваше имя">
+            <button id="join-btn" class="main-btn">Войти</button>
+        </div>
+
+        <div id="chat-window">
+            <div class="chat-container">
+                <div id="messages"></div>
+                <div id="user-list">
+                    <strong>В сети:</strong>
+                    <ul id="online-users"></ul>
+                </div>
+            </div>
+            <div class="input-group" style="margin-top: 10px;">
+                <input type="text" id="msg-input" placeholder="Введите сообщение...">
+                <button id="send-btn" class="main-btn">Отправить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const authBlock = document.getElementById('auth-block');
+        const chatWindow = document.getElementById('chat-window');
+        
+        document.getElementById('join-btn').onclick = () => {
+            const name = document.getElementById('username-input').value;
+            if (name) {
+                socket.emit('set-username', name);
+                authBlock.style.display = 'none';
+                chatWindow.style.display = 'block';
+            }
+        };
+
+        document.getElementById('send-btn').onclick = () => {
+            const input = document.getElementById('msg-input');
+            if (input.value) {
+                socket.emit('send-message', input.value);
+                input.value = '';
+            }
+        };
+
+        socket.on('message', (msg) => {
+            const div = document.createElement('div');
+            div.innerHTML = `<b style="color:#438686">${msg.user}:</b> ${msg.text}`;
+            if (msg.user === 'Система') div.className = 'system-msg';
+            document.getElementById('messages').appendChild(div);
+            const msgDiv = document.getElementById('messages');
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+        });
+
+        socket.on('user-list', (users) => {
+            const list = document.getElementById('online-users');
+            list.innerHTML = users.map(u => `<li>${u}</li>`).join('');
+        });
+    </script>
+</body>
+</html>

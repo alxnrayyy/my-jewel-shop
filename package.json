@@ -1,0 +1,15 @@
+{
+  "name": "shashka-jewels-chat",
+  "version": "1.0.0",
+  "description": "Lab 9 WebSocket Chat",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
+}
